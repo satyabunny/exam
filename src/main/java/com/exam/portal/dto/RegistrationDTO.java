@@ -7,15 +7,13 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class RegistrationDTO extends Root {
+public class RegistrationDTO {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Long userInfoId;
-	
 	private String name;
 	
 	private String email;

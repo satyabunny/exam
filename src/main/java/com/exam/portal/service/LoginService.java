@@ -1,6 +1,7 @@
 package com.exam.portal.service;
 
 import com.exam.portal.domain.UserInfo;
+import com.exam.portal.dto.RegistrationDTO;
 import com.exam.portal.dto.UserInfoDTO;
 
 public interface LoginService {
@@ -16,4 +17,6 @@ public interface LoginService {
 	UserInfo getUser(String xAuthToken) throws Exception;
 	
 	String encryptPasswordSHA256(String password);
+	
+	UserInfoDTO registerUser(RegistrationDTO registrationDTO);
 }

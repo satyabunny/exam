@@ -1,21 +1,26 @@
 package com.exam.portal.serviceImpl;
 
 import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.Random;
 
 import org.apache.commons.codec.binary.Base64;
 import org.dozer.DozerBeanMapper;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import com.exam.portal.domain.Course;
 import com.exam.portal.domain.LoginData;
 import com.exam.portal.domain.UserInfo;
+import com.exam.portal.dto.RegistrationDTO;
 import com.exam.portal.dto.UserInfoDTO;
 import com.exam.portal.repo.LoginDataRepository;
 import com.exam.portal.repo.UserInfoRepository;
 import com.exam.portal.service.LoginService;
 import com.exam.portal.util.Utility;
 
-
+@Service
 public class LoginServiceImpl implements LoginService {
 	
 	private static final Mapper mapper = new DozerBeanMapper();
@@ -25,7 +30,7 @@ public class LoginServiceImpl implements LoginService {
 	
 	@Autowired
 	LoginDataRepository loginDataRepository;
-
+	
 	@Override
 	public UserInfoDTO login(String email, String password) throws Exception {
 
@@ -45,7 +50,7 @@ public class LoginServiceImpl implements LoginService {
 					loginData.setUserInfo(user);
 				 	loginData.setAuthToken(getAuthToken(user));
 					loginDataRepository.save(loginData);
-					response.setUserInfoId(user.getUserInfoID());
+					response.setUserInfoID(user.getUserInfoID());
 					response.setAuthToken(loginData.getAuthToken());
 				} else {
 					throw new Exception("Please enter correct password");
@@ -109,6 +114,32 @@ public class LoginServiceImpl implements LoginService {
 			getAuthToken(user);
 		}
 		return authToken;
+	}
+
+	@Override
+	public UserInfoDTO registerUser(RegistrationDTO registrationDTO) {
+		UserInfo info = new UserInfo();
+		UserInfoDTO dto = new UserInfoDTO();
+		if (registrationDTO != null) {
+			mapper.map(registrationDTO, info);
+		}
+		setUserPwdAndSalt(info, registrationDTO.getPassword());
+		userInfoRepository.save(info);
+		
+		mapper.map(info, dto);
+		
+		return dto;
+	}
+	
+	public void setUserPwdAndSalt(UserInfo info, String userPassword) {
+		final Random random = new SecureRandom();
+		final byte[] saltArray = new byte[32];
+		random.nextBytes(saltArray);
+		final String randomSalt = Base64.encodeBase64String(saltArray);
+		final String passwordWithSalt = userPassword + randomSalt;
+		String hashedPasswordWithSalt = encryptPasswordSHA256(passwordWithSalt);
+		info.setPassword(hashedPasswordWithSalt);
+		info.setSalt(randomSalt);
 	}
 
 }
