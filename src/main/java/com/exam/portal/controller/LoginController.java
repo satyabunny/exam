@@ -1,6 +1,9 @@
 package com.exam.portal.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +19,7 @@ import com.exam.portal.service.LoginService;
 
 @RestController
 @RequestMapping(value="/user")
+@CrossOrigin(origins = "http://localhost:4200")
 public class LoginController {
 	
 	@Autowired
@@ -59,6 +63,25 @@ public class LoginController {
 			customResponse = new ReturnHolder(false, new ErrorObject("err500", e.getMessage()));
 		}
 		return customResponse;
+	}
+	
+	/**
+	 * To logout
+	 * 
+	 * @param userId
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/logout", method = RequestMethod.POST)
+	public ReturnHolder logout(HttpServletRequest request) {
+		ReturnHolder holder = new ReturnHolder();
+		try {
+			loginService.logout(request.getHeader("authToken"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			holder = new ReturnHolder(false, new ErrorObject("err500", e.getMessage()));
+		}
+		return holder;
 	}
 
 }

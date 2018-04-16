@@ -14,7 +14,6 @@ import lombok.ToString;
 @Entity
 @Table(name="USER_INFO")
 @Data
-@ToString(callSuper=false)
 @EqualsAndHashCode(callSuper=false)
 public class UserInfo extends Root /*implements Authentication*/{
 	

@@ -18,9 +18,9 @@ public class Answer {
 	@SequenceGenerator(name = "answerSeq", sequenceName = "ANSWER_ID_SEQ", allocationSize = 1)
 	private Long answerId;
 	
-	private String answertext;
+	private String answerText;
 	
-	private Boolean hasImage;
+	private Boolean hasImage = Boolean.FALSE;
 	
 	@ManyToOne
 	private Question question;

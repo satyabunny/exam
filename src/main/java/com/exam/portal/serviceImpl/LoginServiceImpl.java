@@ -75,8 +75,10 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
 	public void logout(String token) throws Exception {
-		// TODO Auto-generated method stub
-
+		LoginData loginData = loginDataRepository.findByAuthToken(token);
+		if (loginData != null) {
+			loginDataRepository.delete(loginData);
+		}
 	}
 
 	@Override

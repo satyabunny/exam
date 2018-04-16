@@ -31,7 +31,7 @@ public class Question extends Root {
 	
 	private String name;
 	
-	private Boolean hasImage;
+	private Boolean hasImage = Boolean.FALSE;
 	
 	@OneToOne
 	private Answer answer;

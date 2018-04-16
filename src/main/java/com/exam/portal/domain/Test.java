@@ -30,7 +30,7 @@ public class Test {
 	
 	private Boolean isTestCompleted;
 	
-	private Long timeRemaing;
+	private Long timeRemaining;
 	
 	@ManyToMany
 	private List<UserInfo> givenBy = new ArrayList<UserInfo>();
