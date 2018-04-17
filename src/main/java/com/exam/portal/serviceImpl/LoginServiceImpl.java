@@ -51,6 +51,7 @@ public class LoginServiceImpl implements LoginService {
 				 	loginData.setAuthToken(getAuthToken(user));
 					loginDataRepository.save(loginData);
 					response.setUserInfoID(user.getUserInfoID());
+					response.setUserRole(user.getRole().name());
 					response.setAuthToken(loginData.getAuthToken());
 				} else {
 					throw new Exception("Please enter correct password");
@@ -84,9 +85,12 @@ public class LoginServiceImpl implements LoginService {
 	@Override
 	public UserInfo getUser(String xAuthToken) throws Exception {
 		
-		UserInfo user = loginDataRepository.findByAuthToken(xAuthToken).getUserInfo();
-		// TODO Auto-generated method stub
-		return user;
+		LoginData data = loginDataRepository.findByAuthToken(xAuthToken);
+		if (data != null) {
+			UserInfo user =		data.getUserInfo();
+			return user;
+		} 
+		return null;
 	}
 	
 	/**
