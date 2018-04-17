@@ -36,6 +36,7 @@ import com.exam.portal.service.ExamService;
 import com.exam.portal.service.LoginService;
 
 @RestController
+@RequestMapping(value="/exam")
 public class ExamController {
 	
 	@Autowired

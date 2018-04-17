@@ -8,4 +8,7 @@ public class AnswerReponseDTO {
 	private String answerText;
 	
 	private Long answerId;
+	
+	private Boolean hasImage = Boolean.FALSE;
+	
 }

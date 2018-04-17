@@ -16,4 +16,6 @@ public class QuestionResponseDTO {
 	
 	private Boolean isAnswered = Boolean.FALSE;
 	
+	private Boolean hasImage = Boolean.FALSE;
+	
 }

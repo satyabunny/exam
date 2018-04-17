@@ -46,10 +46,13 @@ public class LoginServiceImpl implements LoginService {
 				String encPass = encryptPasswordSHA256(passwordWithSalt);
 				if (encPass.equals(user.getPassword())) {
 					response = mapper.map(user, UserInfoDTO.class);
-					LoginData loginData = new LoginData();
-					loginData.setUserInfo(user);
-				 	loginData.setAuthToken(getAuthToken(user));
-					loginDataRepository.save(loginData);
+					LoginData loginData = loginDataRepository.findByUserInfo(user);
+					if (loginData == null) {
+						loginData = new LoginData();
+						loginData.setUserInfo(user);
+						loginData.setAuthToken(getAuthToken(user));
+						loginDataRepository.save(loginData);
+					}
 					response.setUserInfoID(user.getUserInfoID());
 					response.setUserRole(user.getRole().name());
 					response.setAuthToken(loginData.getAuthToken());
@@ -87,7 +90,7 @@ public class LoginServiceImpl implements LoginService {
 		
 		LoginData data = loginDataRepository.findByAuthToken(xAuthToken);
 		if (data != null) {
-			UserInfo user =		data.getUserInfo();
+			UserInfo user =	data.getUserInfo();
 			return user;
 		} 
 		return null;

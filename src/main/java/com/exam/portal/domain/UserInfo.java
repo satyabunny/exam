@@ -48,6 +48,8 @@ public class UserInfo extends Root implements Authentication{
 	private UserRole role = UserRole.Student;
 	
 	private Course course;
+	
+	private Long currentQuestionId;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

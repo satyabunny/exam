@@ -28,8 +28,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private LoginService loginService;
 	
-	private final static String[] ingnoreUrls= {"/excel-upload","/get-questions"};
-
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/user/register","/user/login");
@@ -46,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		
 		http.csrf().disable().authorizeRequests()
-		.antMatchers("/get-questions","/excel-upload").hasAnyAuthority(UserRole.Admin.name(), UserRole.Student.name()).anyRequest().authenticated().and()
+		.antMatchers("/exam/get-questions","/exam/excel-upload","/exam/save-answer","/user/logout").hasAnyAuthority(UserRole.Admin.name(), UserRole.Student.name()).anyRequest().authenticated().and()
 
 		.addFilterBefore(new AuthenticationFilter(loginService),
 				BasicAuthenticationFilter.class)
