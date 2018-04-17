@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,7 +38,10 @@ public class Question extends Root {
 	@OneToOne
 	private Answer answer;
 	
-	@OneToMany(mappedBy="question")
+	@Enumerated
+	private ExamConstants questionType;
+	
+	@OneToMany(mappedBy="question", fetch=FetchType.EAGER)
 	private List<Answer> answerList = new ArrayList<Answer>();
 	
 }

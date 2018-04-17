@@ -1,5 +1,9 @@
 package com.exam.portal.domain;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -7,15 +11,17 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 @Entity
 @Table(name="USER_INFO")
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class UserInfo extends Root /*implements Authentication*/{
+public class UserInfo extends Root implements Authentication{
 	
 	/**
 	 * 
@@ -43,7 +49,7 @@ public class UserInfo extends Root /*implements Authentication*/{
 	
 	private Course course;
 
-/*	@Override
+	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
 
@@ -82,6 +88,6 @@ public class UserInfo extends Root /*implements Authentication*/{
 	public void setAuthenticated(boolean arg0) throws IllegalArgumentException {
 		// TODO Auto-generated method stub
 		
-	}*/
+	}
 
 }

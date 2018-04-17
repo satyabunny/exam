@@ -83,8 +83,10 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
 	public UserInfo getUser(String xAuthToken) throws Exception {
+		
+		UserInfo user = loginDataRepository.findByAuthToken(xAuthToken).getUserInfo();
 		// TODO Auto-generated method stub
-		return null;
+		return user;
 	}
 	
 	/**

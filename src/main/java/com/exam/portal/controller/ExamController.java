@@ -23,11 +23,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.exam.portal.domain.Answer;
 import com.exam.portal.domain.ExamConstants;
 import com.exam.portal.domain.Question;
+import com.exam.portal.domain.UserInfo;
+import com.exam.portal.domain.UserTestStatus;
 import com.exam.portal.dto.ErrorObject;
 import com.exam.portal.dto.ReturnHolder;
+import com.exam.portal.dto.SaveQuestionDTO;
+import com.exam.portal.dto.TestDTO;
 import com.exam.portal.repo.AnswerRepository;
 import com.exam.portal.repo.QuestionRepository;
+import com.exam.portal.repo.UserTestStatusRepository;
 import com.exam.portal.service.ExamService;
+import com.exam.portal.service.LoginService;
 
 @RestController
 public class ExamController {
@@ -40,6 +46,12 @@ public class ExamController {
 	
 	@Autowired
 	AnswerRepository answerRepository;
+	
+	@Autowired
+	LoginService loginService;
+	
+	@Autowired
+	UserTestStatusRepository userTestStatusRepository;
 	
 	public static final String SAMPLE_XLSX_FILE_PATH = "/home/thrymr/Downloads/Untitled spreadsheet.xlsx";
 	
@@ -105,6 +117,8 @@ public class ExamController {
 					}
 					questionRepository.save(question);
 					answerRepository.saveAll(answerList);
+					question.setQuestionType(paperType);
+					question.setAnswerList(answerList);
 					question.setAnswer(answerRepository.findByAnswerTextAndQuestion(correctAnswer,question));
 					questionRepository.save(question);
 					System.out.println();
@@ -119,5 +133,46 @@ public class ExamController {
 
 		return returnHolder;
 		
+	}
+	@RequestMapping(value="/get-questions",method=RequestMethod.POST)
+	public ReturnHolder getQuestions(HttpServletRequest request) {
+		ReturnHolder holder = new ReturnHolder();
+		String xAuth = request.getHeader("authToken");
+		try {
+			UserInfo appUser = loginService.getUser(xAuth);
+			TestDTO dto = examService.getQuestions(appUser);
+			holder.setAuthToken(xAuth);
+			holder.setResult(dto);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return holder;
+	}
+	
+	@RequestMapping(value="/save-answer", method=RequestMethod.POST)
+	public ReturnHolder saveAnswer(SaveQuestionDTO questionDTO, HttpServletRequest request) {
+		ReturnHolder holder = new ReturnHolder();
+		String xAuth = request.getHeader("authToken");
+		try {
+			UserInfo appUser = loginService.getUser(xAuth);
+		if (questionDTO != null) {
+			if (questionDTO.getQutionId() != null && questionDTO.getAnswerId() != null) {
+				Question question = questionRepository.findByQuestionId(questionDTO.getQutionId());
+				UserTestStatus userTestStatus = userTestStatusRepository.findByQuestionAndInfo(question, appUser);
+				Answer answer = answerRepository.findByAnswerId(questionDTO.getAnswerId());
+				userTestStatus.setAnswer(answer);
+				userTestStatus.setIsAnswered(Boolean.TRUE);
+				if (question.getAnswer().equals(answer)) {
+					userTestStatus.setIsCorrectAnswered(Boolean.TRUE);
+				}
+				userTestStatusRepository.save(userTestStatus);
+			}
+		}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return holder;
 	}
 }

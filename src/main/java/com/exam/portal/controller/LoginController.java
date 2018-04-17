@@ -10,20 +10,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.exam.portal.domain.UserInfo;
 import com.exam.portal.dto.ErrorObject;
 import com.exam.portal.dto.LoginDTO;
 import com.exam.portal.dto.RegistrationDTO;
 import com.exam.portal.dto.ReturnHolder;
 import com.exam.portal.dto.UserInfoDTO;
+import com.exam.portal.repo.UserInfoRepository;
 import com.exam.portal.service.LoginService;
 
 @RestController
 @RequestMapping(value="/user")
-@CrossOrigin(origins = "http://localhost:4200")
 public class LoginController {
 	
 	@Autowired
 	private LoginService loginService;
+	
+	@Autowired
+	private UserInfoRepository userInfoRepository;
 	
 	@RequestMapping(value="/register", method=RequestMethod.POST)
 	public ReturnHolder registerUser(@RequestBody RegistrationDTO registrationDTO) {
@@ -31,6 +35,12 @@ public class LoginController {
 		try {
 			if (registrationDTO != null) {
 				if (registrationDTO.getEmail() != null) {
+					System.out.println(" called..............>!" + registrationDTO.getEmail());
+					UserInfo userInfo = userInfoRepository.findByEmail(registrationDTO.getEmail());
+					System.out.println(" called..............>!");
+					if (userInfo != null) {
+						return new ReturnHolder(false, new ErrorObject("err04", "Email Already Exists.."));
+					}
 					UserInfoDTO userInfoDTO = loginService.registerUser(registrationDTO);
 					holder.setResult(userInfoDTO);
 				} else {

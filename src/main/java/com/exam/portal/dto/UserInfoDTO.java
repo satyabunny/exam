@@ -22,6 +22,8 @@ public class UserInfoDTO implements Serializable {
 	
 	private String course;
 	
+	private String userRole;
+	
 	private String mobileNumber;
 	
 	private String authToken;

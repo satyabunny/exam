@@ -9,5 +9,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
 	
 	Answer findByAnswerText(String text);
 	Answer findByAnswerTextAndQuestion(String text, Question question);
+	Answer findByAnswerId(Long answerId);
 
 }
