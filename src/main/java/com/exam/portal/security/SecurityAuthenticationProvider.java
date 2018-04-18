@@ -1,6 +1,6 @@
 package com.exam.portal.security;
 
-import java.util.Optional;
+/*import java.util.Optional;
 
 import org.omg.CORBA.UnknownUserException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 import com.exam.portal.domain.UserInfo;
 import com.exam.portal.repo.UserInfoRepository;
 
-@Component
-public class SecurityAuthenticationProvider implements AuthenticationProvider {
+@Component*/
+public class SecurityAuthenticationProvider /*implements AuthenticationProvider*/ {
 
-	private final UserInfoRepository userInfoRepository;
+	/*private final UserInfoRepository userInfoRepository;
 
 	@Autowired
 	public SecurityAuthenticationProvider(UserInfoRepository userInfoRepository) {
@@ -43,5 +43,5 @@ public class SecurityAuthenticationProvider implements AuthenticationProvider {
 	@Override
 	public boolean supports(Class<?> authentication) {
 		return DemoAuthenticationToken.class.isAssignableFrom(authentication);
-	}
+	}*/
 }

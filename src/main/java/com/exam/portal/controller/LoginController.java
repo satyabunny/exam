@@ -3,8 +3,8 @@ package com.exam.portal.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +19,7 @@ import com.exam.portal.dto.UserInfoDTO;
 import com.exam.portal.repo.UserInfoRepository;
 import com.exam.portal.service.LoginService;
 
+@CrossOrigin(allowedHeaders= {"Content-type,Accept"})
 @RestController
 @RequestMapping(value="/user")
 public class LoginController {
@@ -56,9 +57,10 @@ public class LoginController {
 		return holder;
 	}
 	
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	@ExceptionHandler()
-	public ReturnHolder login(@RequestBody LoginDTO loginBean) {
+	@RequestMapping(value = "/login", method = RequestMethod.POST, 
+			produces= {MediaType.APPLICATION_JSON_VALUE,MediaType.TEXT_PLAIN_VALUE}, consumes= {MediaType.APPLICATION_JSON_VALUE,MediaType.TEXT_PLAIN_VALUE})
+	public ReturnHolder login(@RequestBody LoginDTO loginBean, HttpServletRequest request) {
+		System.out.println("IN--------------------->");
 		ReturnHolder customResponse = new ReturnHolder();
 		try {
 			UserInfoDTO dataResponse = loginService.login(loginBean.getEmail(), loginBean.getPassword());
@@ -67,7 +69,7 @@ public class LoginController {
 				customResponse.setMessage("User logged in succesfully");
 			} else {
 				customResponse = new ReturnHolder(false,
-						new ErrorObject("err001", "User name and password don't match"));
+				new ErrorObject("err001", "User name and password don't match"));
 			}
 		} catch (Exception e) {
 			customResponse = new ReturnHolder(false, new ErrorObject("err500", e.getMessage()));

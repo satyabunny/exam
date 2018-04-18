@@ -1,7 +1,6 @@
 package com.exam.portal.security;
 
-import java.io.IOException;
-import java.util.Arrays;
+/*import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -22,11 +21,11 @@ import com.exam.portal.domain.UserRole;
 import com.exam.portal.dto.ErrorObject;
 import com.exam.portal.dto.ReturnHolder;
 import com.exam.portal.service.LoginService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;*/
 
-public class AuthenticationFilter extends OncePerRequestFilter {
+public class AuthenticationFilter/* extends OncePerRequestFilter*/ {
 
-	private LoginService loginService;
+	/*private LoginService loginService;
 
 	public AuthenticationFilter(LoginService loginService) {
 		super();
@@ -82,6 +81,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 			return true;
 		else
 			return false;
-	}
+	}*/
 
 }
