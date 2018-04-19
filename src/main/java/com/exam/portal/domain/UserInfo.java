@@ -44,6 +44,8 @@ public class UserInfo extends Root /*implements Authentication*/{
 	private Course course;
 	
 	private Long currentQuestionId;
+	
+	private Long remaingTime = 3600000l;
 
 	/*@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

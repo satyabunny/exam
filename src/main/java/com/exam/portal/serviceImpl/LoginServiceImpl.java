@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.exam.portal.domain.Course;
 import com.exam.portal.domain.LoginData;
 import com.exam.portal.domain.UserInfo;
+import com.exam.portal.domain.UserRole;
 import com.exam.portal.dto.RegistrationDTO;
 import com.exam.portal.dto.UserInfoDTO;
 import com.exam.portal.repo.LoginDataRepository;
@@ -150,6 +151,18 @@ public class LoginServiceImpl implements LoginService {
 		String hashedPasswordWithSalt = encryptPasswordSHA256(passwordWithSalt);
 		info.setPassword(hashedPasswordWithSalt);
 		info.setSalt(randomSalt);
+	}
+
+	@Override
+	public void saveAdmin() {
+		
+		UserInfo info = new UserInfo();
+		info.setEmail("admin@gmail.com");
+		info.setMobileNumber("8125877875");
+		info.setRole(UserRole.Admin);
+		setUserPwdAndSalt(info, "admin@123");
+		userInfoRepository.save(info);
+		
 	}
 
 }

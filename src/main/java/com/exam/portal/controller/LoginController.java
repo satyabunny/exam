@@ -93,5 +93,11 @@ public class LoginController {
 		}
 		return holder;
 	}
+	
+	@RequestMapping(value="/add-admin", method=RequestMethod.POST)
+	public ReturnHolder addAdmin() {
+		loginService.saveAdmin();
+		return new ReturnHolder();
+	}
 
 }

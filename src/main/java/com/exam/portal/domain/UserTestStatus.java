@@ -34,7 +34,7 @@ public class UserTestStatus extends Root {
 	@ManyToOne
 	private UserInfo info;
 	
-	private Boolean isAnswered = Boolean.FALSE;
+	private Boolean isAnswered;
 	
 	private Boolean isCorrectAnswered = Boolean.FALSE;
 

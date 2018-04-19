@@ -24,4 +24,6 @@ public class TestDTO implements Serializable {/**
 	
 	private Long currentQuestionId; 
 	
+	private Long startTime;
+	
 }

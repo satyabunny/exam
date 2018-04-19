@@ -19,4 +19,6 @@ public interface LoginService {
 	String encryptPasswordSHA256(String password);
 	
 	UserInfoDTO registerUser(RegistrationDTO registrationDTO);
+	
+	void saveAdmin();
 }
