@@ -19,7 +19,7 @@ import com.exam.portal.dto.UserInfoDTO;
 import com.exam.portal.repo.UserInfoRepository;
 import com.exam.portal.service.LoginService;
 
-@CrossOrigin(allowedHeaders= {"Content-type,Accept"})
+@CrossOrigin
 @RestController
 @RequestMapping(value="/user")
 public class LoginController {
@@ -57,13 +57,11 @@ public class LoginController {
 		return holder;
 	}
 	
-	@RequestMapping(value = "/login", method = RequestMethod.POST, 
-			produces= {MediaType.APPLICATION_JSON_VALUE,MediaType.TEXT_PLAIN_VALUE}, consumes= {MediaType.APPLICATION_JSON_VALUE,MediaType.TEXT_PLAIN_VALUE})
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ReturnHolder login(@RequestBody LoginDTO loginBean, HttpServletRequest request) {
-		System.out.println("IN--------------------->");
 		ReturnHolder customResponse = new ReturnHolder();
 		try {
-			UserInfoDTO dataResponse = loginService.login(loginBean.getEmail(), loginBean.getPassword());
+			UserInfoDTO dataResponse = loginService.login(loginBean.getUsername(), loginBean.getPassword());
 			if (dataResponse != null) {
 				customResponse.setResult(dataResponse);
 				customResponse.setMessage("User logged in succesfully");

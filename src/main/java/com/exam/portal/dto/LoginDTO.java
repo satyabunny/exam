@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper=false)
 public class LoginDTO {
 	
-	private String email;
+	private String username;
 	
 	private String password;
 

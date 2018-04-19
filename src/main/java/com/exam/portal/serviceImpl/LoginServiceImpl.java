@@ -37,7 +37,6 @@ public class LoginServiceImpl implements LoginService {
 		if (!Utility.isValidEmail(email)) {
 			throw new Exception("please enter valid email");
 		}
-
 		UserInfo user = userInfoRepository.findByEmail(email);
 		UserInfoDTO response = null;
 		if (user != null) {
