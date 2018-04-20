@@ -17,6 +17,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -172,7 +173,7 @@ public class ExamController {
 	}
 	
 	@RequestMapping(value="/submit-question", method=RequestMethod.POST)
-	public ReturnHolder saveAnswer(SaveQuestionDTO questionDTO, HttpServletRequest request) {
+	public ReturnHolder saveAnswer(@RequestBody SaveQuestionDTO questionDTO, HttpServletRequest request) {
 		ReturnHolder holder = new ReturnHolder();
 		String xAuth = request.getHeader("authToken");
 		try {
@@ -181,25 +182,38 @@ public class ExamController {
 			Test test = testRepository.findByGivenBy(appUser);
 			if (questionDTO.getQuestionId() != null && questionDTO.getAnswerId() != null) {
 				Question question = questionRepository.findByQuestionId(questionDTO.getQuestionId());
-				UserTestStatus userTestStatus = userTestStatusRepository.findByQuestionAndInfo(question, appUser);
-				Answer answer = answerRepository.findByAnswerId(questionDTO.getAnswerId());
-				userTestStatus.setAnswer(answer);
-				userTestStatus.setIsAnswered(Boolean.TRUE);
-				if (question.getAnswer().equals(answer)) {
-					userTestStatus.setIsCorrectAnswered(Boolean.TRUE);
+				if (question != null) {
+					UserTestStatus userTestStatus = userTestStatusRepository.findByQuestionAndInfo(question, appUser);
+					if (userTestStatus != null) {
+						Answer answer = answerRepository.findByAnswerId(questionDTO.getAnswerId());
+						userTestStatus.setAnswer(answer);
+						userTestStatus.setIsAnswered(Boolean.TRUE);
+						if (question.getAnswer().equals(answer)) {
+							userTestStatus.setIsCorrectAnswered(Boolean.TRUE);
+						}
+						appUser.setRemaingTime(questionDTO.getTime());
+						test.setCurrentQuestionId(questionDTO.getQuestionId());
+						test.setTimeRemaining(questionDTO.getTime());
+						userInfoRepository.save(appUser);
+						userTestStatusRepository.save(userTestStatus);
+						holder.setResult("Submitted");
+					} else {
+						holder = new ReturnHolder(false, new ErrorObject("err02", "Invalid request."));
+					}
+				} else {
+					//question not found.
+					holder = new ReturnHolder(false, new ErrorObject("err02", "Invalid request."));
 				}
-				appUser.setRemaingTime(questionDTO.getTime());
-				test.setCurrentQuestionId(questionDTO.getQuestionId());
-				test.setTimeRemaining(questionDTO.getTime());
-				userInfoRepository.save(appUser);
-				userTestStatusRepository.save(userTestStatus);
-				holder.setResult("Submitted");
 			} else if (questionDTO.getTime() != null) {
 				test.setTimeRemaining(questionDTO.getTime());
+				holder.setResult("Time Updated");
 			}
 			testRepository.save(test);
+		} else {
+			holder = new ReturnHolder(false, new ErrorObject("err02", "Invalid request."));
 		}
 		} catch (Exception e) {
+			System.out.println("=========="+e.getMessage());
 			holder = new ReturnHolder(false, new ErrorObject("err01", "Error Submitting question"));
 			// TODO: handle exception
 		}
