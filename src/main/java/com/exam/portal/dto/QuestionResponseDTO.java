@@ -12,6 +12,8 @@ public class QuestionResponseDTO {
 	
 	private Long questionId;
 	
+	private Long answerId;
+	
 	private List<AnswerReponseDTO> answerList = new ArrayList<AnswerReponseDTO>();
 	
 	private Boolean isAnswered = Boolean.FALSE;

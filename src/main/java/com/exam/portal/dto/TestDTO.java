@@ -26,4 +26,6 @@ public class TestDTO implements Serializable {/**
 	
 	private Long startTime;
 	
+	private String status;
+	
 }

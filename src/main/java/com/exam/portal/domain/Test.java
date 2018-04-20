@@ -1,15 +1,15 @@
 package com.exam.portal.domain;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
+
+import com.exam.portal.dto.TestStatus;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,10 +28,10 @@ public class Test {
 	
 	private Double totalMarks;
 	
-	private Boolean isTestCompleted;
+	private TestStatus testStatus;
 	
 	private Long timeRemaining;
 	
-	@ManyToMany
-	private List<UserInfo> givenBy = new ArrayList<UserInfo>();
+	@ManyToOne
+	private UserInfo givenBy;
 }

@@ -2,6 +2,7 @@ package com.exam.portal.serviceImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,13 +13,16 @@ import org.springframework.stereotype.Service;
 
 import com.exam.portal.domain.ExamConstants;
 import com.exam.portal.domain.Question;
+import com.exam.portal.domain.Test;
 import com.exam.portal.domain.UserInfo;
 import com.exam.portal.domain.UserTestStatus;
 import com.exam.portal.dto.AnswerReponseDTO;
 import com.exam.portal.dto.QuestionResponseDTO;
 import com.exam.portal.dto.ResultDTO;
 import com.exam.portal.dto.TestDTO;
+import com.exam.portal.dto.TestStatus;
 import com.exam.portal.repo.QuestionRepository;
+import com.exam.portal.repo.TestRepository;
 import com.exam.portal.repo.UserInfoRepository;
 import com.exam.portal.repo.UserTestStatusRepository;
 import com.exam.portal.service.ExamService;
@@ -35,48 +39,74 @@ public class ExamServiceImpl implements ExamService {
 	@Autowired
 	UserInfoRepository userInfoRepository;
 	
+	@Autowired
+	TestRepository testRepository;
+	
 	@Override
 	public void exportExcel() throws Exception {
 
 	}
 
 	@Override
-	public TestDTO getQuestions(UserInfo user) {
+	public TestDTO getQuestions(UserInfo user, Test test) {
 		TestDTO dto = new TestDTO();
 		
-		List<Question> allQuestions = questionRepository.findByQuestionTypeIn(getExamConstants(user));
+		List<Question> allQuestions = new ArrayList<Question>();
+		List<UserTestStatus> userTestStatuses = new ArrayList<UserTestStatus>();
+				if (test == null) {
+					allQuestions = questionRepository.findByQuestionTypeIn(getExamConstants(user));
+				} else {
+					userTestStatuses  = userTestStatusRepository.findByInfo(user);
+					allQuestions = userTestStatuses.stream().map(i -> i.getQuestion()).collect(Collectors.toList());
+				}
 		
 		List<Question> arthimaticQuestoins = getFilteredQuestions(allQuestions, ExamConstants.ARTHIMETICS);
-		
-		arthimaticQuestoins = shuffleQuestions(arthimaticQuestoins, null);
+		if (test == null) {
+			arthimaticQuestoins = shuffleQuestions(arthimaticQuestoins, null);
+		}
 		
 		List<Question> reasoningQuestoins = getFilteredQuestions(allQuestions, ExamConstants.REASONING);
-		reasoningQuestoins = shuffleQuestions(reasoningQuestoins, null);;
+		if (test == null) {
+			reasoningQuestoins = shuffleQuestions(reasoningQuestoins, null);;
+		}
 		
 		List<Question> englishQuestoins = getFilteredQuestions(allQuestions, ExamConstants.ENGLISH);
-		englishQuestoins = shuffleQuestions(englishQuestoins, null);
+		if (test == null) {
+			englishQuestoins = shuffleQuestions(englishQuestoins, null);
+		}
 		
 		List<Question> coreQuestoins = getFilteredQuestions(allQuestions, 
 				ExamConstants.valueOf(user.getCourse().name()));
-		
-		coreQuestoins = shuffleQuestions(coreQuestoins, null);
+		if (test == null) {
+			coreQuestoins = shuffleQuestions(coreQuestoins, null);
+		}		
 		
 		List<QuestionResponseDTO> arthimaticQuestionsDto = new ArrayList<QuestionResponseDTO>();
 
-		dto.setArthimaticQuestionsDto(getQuestionsDto(arthimaticQuestoins, arthimaticQuestionsDto, user));
+		dto.setArthimaticQuestionsDto(getQuestionsDto(arthimaticQuestoins, arthimaticQuestionsDto, user, userTestStatuses));
 		
 		List<QuestionResponseDTO> reasoningQuestionsDto = new ArrayList<QuestionResponseDTO>();
 		
-		dto.setReasoningQuestionsDto(getQuestionsDto(reasoningQuestoins, reasoningQuestionsDto, user));
+		dto.setReasoningQuestionsDto(getQuestionsDto(reasoningQuestoins, reasoningQuestionsDto, user, userTestStatuses));
 		
 		List<QuestionResponseDTO> englishQuestionsDto = new ArrayList<QuestionResponseDTO>();
 		
-		dto.setEnglishQuestionsDto(getQuestionsDto(englishQuestoins, englishQuestionsDto, user));
+		dto.setEnglishQuestionsDto(getQuestionsDto(englishQuestoins, englishQuestionsDto, user, userTestStatuses));
 		
 		List<QuestionResponseDTO> coreQuestionsDto = new ArrayList<QuestionResponseDTO>();
 
-		dto.setCoreQuestionsDto(getQuestionsDto(coreQuestoins, coreQuestionsDto, user));
-		System.out.println(" ====== " + allQuestions.size());
+		dto.setCoreQuestionsDto(getQuestionsDto(coreQuestoins, coreQuestionsDto, user, userTestStatuses));
+		if (test == null) {
+			test = new Test();
+			test.setGivenBy(user);
+			test.setTestDate(new Date());
+			test.setTestStatus(TestStatus.INPROGRESS);
+			test.setTotalMarks(0d);
+			test.setTimeRemaining(3600000l);
+			testRepository.save(test);
+		} else {
+			dto.setTimeRemaining(test.getTimeRemaining());
+		}
 		return dto;
 	}
 	
@@ -95,7 +125,7 @@ public class ExamServiceImpl implements ExamService {
 	}
 	
 	public List<QuestionResponseDTO> getQuestionsDto(List<Question> questions,
-			List<QuestionResponseDTO> questionResponseDTOs, UserInfo user) {
+			List<QuestionResponseDTO> questionResponseDTOs, UserInfo user, List<UserTestStatus> userTestStatuses) {
 		questions.forEach(question -> {
 			QuestionResponseDTO questionDto = new QuestionResponseDTO();
 			List<AnswerReponseDTO> answerReponseDTOs = new ArrayList<>();
@@ -110,7 +140,22 @@ public class ExamServiceImpl implements ExamService {
 			});
 			questionDto.setAnswerList(answerReponseDTOs);
 			questionResponseDTOs.add(questionDto);
-			saveUserTestStatus(user, question);
+			if (userTestStatuses == null || userTestStatuses.size() == 0) {
+				saveUserTestStatus(user, question);
+			} else {
+				UserTestStatus status = userTestStatuses.stream().filter(userTest -> {
+				 if(userTest.getQuestion().equals(question)	&& userTest.getInfo().equals(user)) 
+				 {
+					 return true;
+				 } else 
+					 return false; }).findAny().orElse(null);
+				if (status != null) {
+					questionDto.setIsAnswered(status.getIsAnswered());
+					if (status.getAnswer() != null) {
+						questionDto.setAnswerId(status.getAnswer().getAnswerId());
+					}
+				}
+			}
 		});
 		return questionResponseDTOs;
 	}

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.exam.portal.domain.Answer;
 import com.exam.portal.domain.ExamConstants;
 import com.exam.portal.domain.Question;
+import com.exam.portal.domain.Test;
 import com.exam.portal.domain.UserInfo;
 import com.exam.portal.domain.UserTestStatus;
 import com.exam.portal.dto.ErrorObject;
@@ -31,8 +32,10 @@ import com.exam.portal.dto.ResultDTO;
 import com.exam.portal.dto.ReturnHolder;
 import com.exam.portal.dto.SaveQuestionDTO;
 import com.exam.portal.dto.TestDTO;
+import com.exam.portal.dto.TestStatus;
 import com.exam.portal.repo.AnswerRepository;
 import com.exam.portal.repo.QuestionRepository;
+import com.exam.portal.repo.TestRepository;
 import com.exam.portal.repo.UserInfoRepository;
 import com.exam.portal.repo.UserTestStatusRepository;
 import com.exam.portal.service.ExamService;
@@ -57,6 +60,9 @@ public class ExamController {
 	
 	@Autowired
 	UserInfoRepository userInfoRepository;
+	
+	@Autowired
+	TestRepository testRepository;
 	
 	@Autowired
 	UserTestStatusRepository userTestStatusRepository;
@@ -148,7 +154,13 @@ public class ExamController {
 		String xAuth = request.getHeader("authToken");
 		try {
 			UserInfo appUser = loginService.getUser(xAuth);
-			TestDTO dto = examService.getQuestions(appUser);
+			Test test = testRepository.findByGivenBy(appUser);
+			TestDTO dto = new TestDTO();
+			if (test != null && test.getTestStatus().equals(TestStatus.COMPLETED)) {
+				dto.setStatus(TestStatus.COMPLETED.name());
+			} else {
+				dto = examService.getQuestions(appUser, test);
+			}
 			dto.setStartTime((3600000l - dto.getTimeRemaining()));
 			holder.setAuthToken(xAuth);
 			holder.setResult(dto);
