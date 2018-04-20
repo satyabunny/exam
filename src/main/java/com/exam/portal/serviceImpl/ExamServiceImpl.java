@@ -138,10 +138,10 @@ public class ExamServiceImpl implements ExamService {
 	public List<ResultDTO> getResults() {
 		List<ResultDTO> dtos = new ArrayList<ResultDTO>();
 		Map<Long, Integer> resultMap = new HashMap<Long, Integer>();
-		List<Object[]> results = questionRepository.getResults();
+		List<Object[]> results = userTestStatusRepository.getResults();
 		if (results != null && results.size() > 0) {
 			results.forEach(result -> {
-				resultMap.put((Long)result[1], (Integer)result[0]);
+				resultMap.put(((Integer)result[1]).longValue(), (Integer)result[0]);
 			});
 		} else {
 			return dtos;
@@ -150,6 +150,7 @@ public class ExamServiceImpl implements ExamService {
 		
 		for (UserInfo user : userInfos) {
 			ResultDTO dto = new ResultDTO();
+			dto.setUserInfoId(user.getUserInfoID());
 			dto.setCollegeCode(user.getCollegeCode());
 			dto.setEmail(user.getEmail());
 			dto.setCourse(user.getCourse().name());
