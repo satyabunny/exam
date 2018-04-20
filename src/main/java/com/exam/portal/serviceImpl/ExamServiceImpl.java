@@ -106,6 +106,7 @@ public class ExamServiceImpl implements ExamService {
 			testRepository.save(test);
 		} else {
 			dto.setTimeRemaining(test.getTimeRemaining());
+			dto.setCurrentQuestionId(test.getCurrentQuestionId());
 		}
 		return dto;
 	}

@@ -160,8 +160,8 @@ public class ExamController {
 				dto.setStatus(TestStatus.COMPLETED.name());
 			} else {
 				dto = examService.getQuestions(appUser, test);
+				dto.setStartTime((3600000l - dto.getTimeRemaining()));
 			}
-			dto.setStartTime((3600000l - dto.getTimeRemaining()));
 			holder.setAuthToken(xAuth);
 			holder.setResult(dto);
 		} catch (Exception e) {
@@ -178,6 +178,7 @@ public class ExamController {
 		try {
 			UserInfo appUser = loginService.getUser(xAuth);
 		if (questionDTO != null) {
+			Test test = testRepository.findByGivenBy(appUser);
 			if (questionDTO.getQuestionId() != null && questionDTO.getAnswerId() != null) {
 				Question question = questionRepository.findByQuestionId(questionDTO.getQuestionId());
 				UserTestStatus userTestStatus = userTestStatusRepository.findByQuestionAndInfo(question, appUser);
@@ -188,13 +189,15 @@ public class ExamController {
 					userTestStatus.setIsCorrectAnswered(Boolean.TRUE);
 				}
 				appUser.setRemaingTime(questionDTO.getTime());
+				test.setCurrentQuestionId(questionDTO.getQuestionId());
+				test.setTimeRemaining(questionDTO.getTime());
 				userInfoRepository.save(appUser);
 				userTestStatusRepository.save(userTestStatus);
 				holder.setResult("Submitted");
 			} else if (questionDTO.getTime() != null) {
-				appUser.setRemaingTime(questionDTO.getTime());
-				userInfoRepository.save(appUser);
+				test.setTimeRemaining(questionDTO.getTime());
 			}
+			testRepository.save(test);
 		}
 		} catch (Exception e) {
 			holder = new ReturnHolder(false, new ErrorObject("err01", "Error Submitting question"));
@@ -202,6 +205,26 @@ public class ExamController {
 		}
 		
 		return holder;
+	}
+	
+	@RequestMapping(value="/submit-test", method=RequestMethod.POST)
+	public ReturnHolder submitTest(HttpServletRequest request) {
+		String xAuth = request.getHeader("authToken");
+		try {
+			UserInfo appUser = loginService.getUser(xAuth);
+			if (appUser != null) {
+				Test test = testRepository.findByGivenBy(appUser);
+				if (test != null) {
+					test.setTestStatus(TestStatus.COMPLETED);
+					testRepository.save(test);
+				} else {
+					return new ReturnHolder(false, new ErrorObject("err01", "No test found"));
+				}
+			}
+		} catch (Exception e) {
+			return new ReturnHolder(false, new ErrorObject("err02", "Exception while submit test"));
+		}
+		return new ReturnHolder();
 	}
 	
 	@RequestMapping(value="/get-results", method=RequestMethod.GET)
