@@ -56,7 +56,7 @@ public class ExamServiceImpl implements ExamService {
 				if (test == null) {
 					allQuestions = questionRepository.findByQuestionTypeIn(getExamConstants(user));
 				} else {
-					userTestStatuses  = userTestStatusRepository.findByInfo(user);
+					userTestStatuses  = userTestStatusRepository.findUserStatusList(user);
 					allQuestions = userTestStatuses.stream().map(i -> i.getQuestion()).collect(Collectors.toList());
 				}
 		

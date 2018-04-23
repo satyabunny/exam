@@ -13,7 +13,8 @@ public interface UserTestStatusRepository extends JpaRepository<UserTestStatus, 
 	
 	UserTestStatus findByQuestionAndInfo(Question question, UserInfo info);
 	
-	List<UserTestStatus> findByInfo(UserInfo info);
+	@Query(value = "select * from user_test_status where info_user_infoid =? order by user_test_status_id",nativeQuery=true)
+	List<UserTestStatus> findUserStatusList(UserInfo info);
 
 	@Query(value = "select CAST ( count(*) as INTEGER), CAST ( info_user_infoid as INTEGER) from user_test_status where is_correct_answered = 'true' group by info_user_infoid order by count(*) DESC limit 25",nativeQuery=true)
 	List<Object[]> getResults();
