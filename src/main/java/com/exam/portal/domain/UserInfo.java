@@ -1,5 +1,6 @@
 package com.exam.portal.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -33,6 +34,7 @@ public class UserInfo extends Root /*implements Authentication*/{
 	
 	private String salt;
 
+	@Column(unique=true)
 	private String email;
 	
 	private String mobileNumber;
@@ -45,7 +47,7 @@ public class UserInfo extends Root /*implements Authentication*/{
 	
 	private Long currentQuestionId;
 	
-	private Long remaingTime = 3600000l;
+	private Long remaingTime;
 
 	/*@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

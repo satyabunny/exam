@@ -1,7 +1,7 @@
 package com.exam.portal.controller;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,10 +20,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.exam.portal.domain.Answer;
 import com.exam.portal.domain.ExamConstants;
+import com.exam.portal.domain.ExamMaster;
 import com.exam.portal.domain.Question;
 import com.exam.portal.domain.Test;
 import com.exam.portal.domain.UserInfo;
@@ -35,6 +38,7 @@ import com.exam.portal.dto.SaveQuestionDTO;
 import com.exam.portal.dto.TestDTO;
 import com.exam.portal.dto.TestStatus;
 import com.exam.portal.repo.AnswerRepository;
+import com.exam.portal.repo.ExamMasterRepository;
 import com.exam.portal.repo.QuestionRepository;
 import com.exam.portal.repo.TestRepository;
 import com.exam.portal.repo.UserInfoRepository;
@@ -66,17 +70,22 @@ public class ExamController {
 	TestRepository testRepository;
 	
 	@Autowired
+	ExamMasterRepository examMasterRepository;
+	
+	@Autowired
 	UserTestStatusRepository userTestStatusRepository;
 	
 	public static final String SAMPLE_XLSX_FILE_PATH = "/home/thrymr/Downloads/Untitled spreadsheet.xlsx";
 	
 	@RequestMapping(value="/uploadExcel", method=RequestMethod.POST)
-	public ReturnHolder exportExcel(HttpServletRequest request) throws InvalidFormatException, IOException {
+	public ReturnHolder exportExcel(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws InvalidFormatException, IOException {
 		ReturnHolder returnHolder = new ReturnHolder();
-		Workbook workbook = WorkbookFactory.create(new File(SAMPLE_XLSX_FILE_PATH));
+		System.out.println(" =========== " + file);
+		 InputStream stream = file.getInputStream();
+		Workbook workbook = WorkbookFactory.create(stream);
 
 		// Retrieving the number of sheets in the Workbook
-		System.out.println("Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
+		System.out.println(file + " === Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
 
 
 		// Getting the Sheet at index zero
@@ -156,12 +165,17 @@ public class ExamController {
 		try {
 			UserInfo appUser = loginService.getUser(xAuth);
 			Test test = testRepository.findByGivenBy(appUser);
+			ExamMaster examMaster = examMasterRepository.findLatest();
 			TestDTO dto = new TestDTO();
 			if (test != null && test.getTestStatus().equals(TestStatus.COMPLETED)) {
 				dto.setStatus(TestStatus.COMPLETED.name());
 			} else {
-				dto = examService.getQuestions(appUser, test);
-				dto.setStartTime((3600000l - dto.getTimeRemaining()));
+				dto = examService.getQuestions(appUser, test, examMaster);
+				if (examMaster != null && examMaster.getTotalTimeInMillis() != null) {
+					dto.setStartTime((examMaster.getTotalTimeInMillis() - dto.getTimeRemaining()));
+				} else {
+					dto.setStartTime((3600000l - dto.getTimeRemaining()));
+				}
 			}
 			holder.setAuthToken(xAuth);
 			holder.setResult(dto);

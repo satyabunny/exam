@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.exam.portal.domain.ExamConstants;
+import com.exam.portal.domain.ExamMaster;
 import com.exam.portal.domain.Question;
 import com.exam.portal.domain.Test;
 import com.exam.portal.domain.UserInfo;
@@ -48,7 +49,7 @@ public class ExamServiceImpl implements ExamService {
 	}
 
 	@Override
-	public TestDTO getQuestions(UserInfo user, Test test) {
+	public TestDTO getQuestions(UserInfo user, Test test, ExamMaster examMaster) {
 		TestDTO dto = new TestDTO();
 		
 		List<Question> allQuestions = new ArrayList<Question>();
@@ -62,23 +63,39 @@ public class ExamServiceImpl implements ExamService {
 		
 		List<Question> arthimaticQuestoins = getFilteredQuestions(allQuestions, ExamConstants.ARTHIMETICS);
 		if (test == null) {
-			arthimaticQuestoins = shuffleQuestions(arthimaticQuestoins, null);
+			if (examMaster != null && examMaster.getArthimaticQuestions() != null) {
+				arthimaticQuestoins = shuffleQuestions(arthimaticQuestoins, examMaster.getArthimaticQuestions().intValue());
+			} else {
+				arthimaticQuestoins = shuffleQuestions(arthimaticQuestoins, null);
+			}
 		}
 		
 		List<Question> reasoningQuestoins = getFilteredQuestions(allQuestions, ExamConstants.REASONING);
 		if (test == null) {
-			reasoningQuestoins = shuffleQuestions(reasoningQuestoins, null);;
+			if (examMaster != null && examMaster.getNoOfReasoningQuestions() != null) {
+				reasoningQuestoins = shuffleQuestions(reasoningQuestoins, examMaster.getNoOfReasoningQuestions().intValue());
+			} else {
+				reasoningQuestoins = shuffleQuestions(reasoningQuestoins, null);
+			}
 		}
 		
 		List<Question> englishQuestoins = getFilteredQuestions(allQuestions, ExamConstants.ENGLISH);
 		if (test == null) {
-			englishQuestoins = shuffleQuestions(englishQuestoins, null);
+			if (examMaster != null && examMaster.getNoOfEnglishQuestions() != null) {
+				englishQuestoins = shuffleQuestions(englishQuestoins, examMaster.getNoOfEnglishQuestions().intValue());
+			} else {
+				englishQuestoins = shuffleQuestions(englishQuestoins, null);
+			}
 		}
 		
 		List<Question> coreQuestoins = getFilteredQuestions(allQuestions, 
 				ExamConstants.valueOf(user.getCourse().name()));
 		if (test == null) {
-			coreQuestoins = shuffleQuestions(coreQuestoins, null);
+			if (examMaster != null && examMaster.getNoOfCoreQuestions() != null) {
+				coreQuestoins = shuffleQuestions(coreQuestoins, examMaster.getNoOfCoreQuestions().intValue());
+			} else {
+				coreQuestoins = shuffleQuestions(coreQuestoins, null);
+			}
 		}		
 		
 		List<QuestionResponseDTO> arthimaticQuestionsDto = new ArrayList<QuestionResponseDTO>();
@@ -102,7 +119,11 @@ public class ExamServiceImpl implements ExamService {
 			test.setTestDate(new Date());
 			test.setTestStatus(TestStatus.INPROGRESS);
 			test.setTotalMarks(0d);
-			test.setTimeRemaining(3600000l);
+			if (examMaster != null && examMaster.getTotalTimeInMillis() != null) {
+				test.setTimeRemaining(examMaster.getTotalTimeInMillis());
+			} else {
+				test.setTimeRemaining(3600000l);
+			}
 			testRepository.save(test);
 		} else {
 			dto.setCurrentQuestionId(test.getCurrentQuestionId());
