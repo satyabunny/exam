@@ -3,6 +3,7 @@ package com.exam.portal.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -31,6 +32,7 @@ public class Question extends Root {
 	@SequenceGenerator(name = "testSeq", sequenceName = "TEST_ID_SEQ", allocationSize = 1)
 	private Long questionId;
 	
+	@Column(columnDefinition="TEXT")
 	private String name;
 	
 	private Boolean hasImage = Boolean.FALSE;

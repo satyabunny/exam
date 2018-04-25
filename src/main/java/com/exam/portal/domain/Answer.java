@@ -1,5 +1,6 @@
 package com.exam.portal.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,6 +19,7 @@ public class Answer {
 	@SequenceGenerator(name = "answerSeq", sequenceName = "ANSWER_ID_SEQ", allocationSize = 1)
 	private Long answerId;
 	
+	@Column(columnDefinition="TEXT")
 	private String answerText;
 	
 	private Boolean hasImage = Boolean.FALSE;

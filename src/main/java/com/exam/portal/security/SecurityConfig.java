@@ -1,6 +1,6 @@
 package com.exam.portal.security;
 
-/*import java.util.Arrays;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,10 +24,10 @@ import com.exam.portal.service.LoginService;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)*/
-public class SecurityConfig /*extends WebSecurityConfigurerAdapter */{
+@EnableGlobalMethodSecurity(securedEnabled = true)
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	/*@Autowired
+	@Autowired
 	private AccessDeniedHandler accessDeniedHandler;
 
 	@Autowired
@@ -38,7 +38,7 @@ public class SecurityConfig /*extends WebSecurityConfigurerAdapter */{
 	
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers(HttpMethod.POST,"/user/register","/user/login");
+		web.ignoring().antMatchers("/exam/get-options","/exam/get-image-questions","/user/register","/user/login");
 	}
 	
 //
@@ -73,7 +73,7 @@ public class SecurityConfig /*extends WebSecurityConfigurerAdapter */{
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(demoAuthenticationProvider);
-	}*/
+	}
 
 } 
 

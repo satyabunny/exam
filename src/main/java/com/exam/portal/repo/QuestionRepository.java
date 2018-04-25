@@ -14,4 +14,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 	
 	Question findByQuestionId(Long questionId);
 	
+	@Query(value = "select CAST ( question_id as INTEGER) ,name from question where has_image = 'true'", nativeQuery=true)
+	List<Object[]> getImageQuestions();
+	
 }

@@ -32,6 +32,7 @@ import com.exam.portal.domain.Test;
 import com.exam.portal.domain.UserInfo;
 import com.exam.portal.domain.UserTestStatus;
 import com.exam.portal.dto.ErrorObject;
+import com.exam.portal.dto.QuestionImageDTO;
 import com.exam.portal.dto.ResultDTO;
 import com.exam.portal.dto.ReturnHolder;
 import com.exam.portal.dto.SaveQuestionDTO;
@@ -139,12 +140,14 @@ public class ExamController {
 						}
 						System.out.print(cellValue + "\t");
 					}
-					questionRepository.save(question);
-					answerRepository.saveAll(answerList);
-					question.setQuestionType(paperType);
-					question.setAnswerList(answerList);
-					question.setAnswer(answerRepository.findByAnswerTextAndQuestion(correctAnswer,question));
-					questionRepository.save(question);
+					if (question.getName() != null && !question.getName().isEmpty()) {
+						questionRepository.save(question);
+						answerRepository.saveAll(answerList);
+						question.setQuestionType(paperType);
+						question.setAnswerList(answerList);
+						question.setAnswer(answerRepository.findByAnswerTextAndQuestion(correctAnswer,question));
+						questionRepository.save(question);
+					}
 					System.out.println();
 				}
 				}
@@ -267,6 +270,62 @@ public class ExamController {
 			}
 		} catch (Exception e) {
 			holder = new ReturnHolder(false, new ErrorObject("err02", e.getMessage()));
+		}
+		return holder;
+	}
+	
+	@RequestMapping(value="/get-image-questions", method = RequestMethod.GET)
+	public ReturnHolder getImageQuestions() {
+		ReturnHolder holder = new ReturnHolder();
+		try {
+			List<Object[]> questionList = questionRepository.getImageQuestions();
+			List<QuestionImageDTO> dtos = new ArrayList<QuestionImageDTO>();
+			if (questionList != null && !questionList.isEmpty()) {
+				questionList.forEach(object -> {
+					if (object[1] != null && !((String) object[1]).isEmpty()) {
+						QuestionImageDTO dto = new QuestionImageDTO();
+						dto.setQuestionId(((Integer)object[0]).longValue());
+						dto.setName((String)object[1]);
+						dtos.add(dto);
+					}
+				});
+				holder.setResult(dtos);
+			} else {
+				holder = new ReturnHolder(false, new ErrorObject("err01", "No Questions"));
+			}
+			
+		} catch (Exception e) {
+			System.out.println(" ========== " + e.getMessage());
+			holder = new ReturnHolder(false, new ErrorObject("err02", "Server Error."));
+		}
+		
+		return holder;
+	}
+	
+	@RequestMapping(value="/get-options", method=RequestMethod.GET)
+	public ReturnHolder getOptions(@RequestParam("questionId") Long questionId) {
+		ReturnHolder holder = new ReturnHolder();
+		try {
+			if (questionId != null ) {
+				List<Answer> answers = answerRepository.findAnswersByQuestion(questionId);
+				if (answers != null && !answers.isEmpty()) {
+					List<QuestionImageDTO> dtos = new ArrayList<QuestionImageDTO>();
+					answers.forEach(answer -> {
+						QuestionImageDTO dto = new QuestionImageDTO();
+						dto.setName(answer.getAnswerText());
+						dto.setQuestionId(answer.getAnswerId());
+						dtos.add(dto);
+					});
+					holder.setResult(dtos);
+				} else {
+					holder = new ReturnHolder(false, new ErrorObject("err03", "Options not found."));
+				}
+			} else {
+				holder = new ReturnHolder(false, new ErrorObject("err02", "Invalid Request.."));
+			}
+		} catch (Exception e) {
+			System.out.println(" ========== " + e.getMessage());
+			holder = new ReturnHolder(false, new ErrorObject("err01", "Server Error"));
 		}
 		return holder;
 	}
