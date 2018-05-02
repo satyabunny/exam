@@ -1,32 +1,8 @@
 package com.exam.portal.security;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+public class AuthenticationFilter /*extends OncePerRequestFilter*/ {
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.exam.portal.domain.UserInfo;
-import com.exam.portal.domain.UserRole;
-import com.exam.portal.dto.ErrorObject;
-import com.exam.portal.dto.ReturnHolder;
-import com.exam.portal.service.LoginService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-public class AuthenticationFilter extends OncePerRequestFilter {
-
-	private LoginService loginService;
+	/*private LoginService loginService;
 
 	public AuthenticationFilter(LoginService loginService) {
 		super();
@@ -82,6 +58,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 			return true;
 		else
 			return false;
-	}
+	}*/
 
 }

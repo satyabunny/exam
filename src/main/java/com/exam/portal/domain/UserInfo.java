@@ -1,9 +1,5 @@
 package com.exam.portal.domain;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,9 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -22,7 +15,7 @@ import lombok.EqualsAndHashCode;
 @Table(name="USER_INFO")
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class UserInfo extends Root implements Authentication{
+public class UserInfo extends Root /*implements Authentication*/{
 	
 	/**
 	 * 
@@ -55,7 +48,7 @@ public class UserInfo extends Root implements Authentication{
 	
 	private Long remaingTime;
 
-	@Override
+	/*@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
 
@@ -64,9 +57,9 @@ public class UserInfo extends Root implements Authentication{
 		// list.add(new SimpleGrantedAuthority(role.getRoleName()));
 
 		return list;
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public Object getCredentials() {
 		// TODO Auto-generated method stub
 		return getPassword();
@@ -94,6 +87,6 @@ public class UserInfo extends Root implements Authentication{
 	public void setAuthenticated(boolean arg0) throws IllegalArgumentException {
 		// TODO Auto-generated method stub
 		
-	}
+	}*/
 
 }

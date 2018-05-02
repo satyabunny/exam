@@ -1,16 +1,8 @@
 package com.exam.portal.security;
 
-import java.util.Arrays;
-import java.util.Collection;
+public class DemoAuthenticationToken/* extends AbstractAuthenticationToken */{
 
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-
-import com.exam.portal.domain.UserInfo;
-
-public class DemoAuthenticationToken extends AbstractAuthenticationToken {
-
-	private static final long serialVersionUID = -1949976839306453197L;
+	/*private static final long serialVersionUID = -1949976839306453197L;
 	private UserInfo authenticatedUser;
 	private Long id;
 
@@ -43,6 +35,6 @@ public class DemoAuthenticationToken extends AbstractAuthenticationToken {
 
 	public Long getId() {
 		return id;
-	}
+	}*/
 
 }
